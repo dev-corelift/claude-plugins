@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "dev-corelift-plugins",
+  "description": "Personal Claude Code plugins by dev-corelift",
+  "owner": {
+    "name": "dev-corelift"
+  },
+  "plugins": [
+    {
+      "name": "grocery",
+      "description": "Weekly meal planning, coupon stacking, and Instacart cart building for a family of 7",
+      "version": "0.1.0",
+      "author": {
+        "name": "ul0gic"
+      },
+      "source": "./plugins/grocery",
+      "category": "productivity"
+    }
+  ]
+}
