@@ -1,9 +1,6 @@
 # Claude project files
 .claude/
 
-# Binaries
-grocery/scripts/harvester
-
 # Go build artifacts
 grocery/scripts/go.sum
 
