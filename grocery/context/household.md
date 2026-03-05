@@ -5,11 +5,13 @@
 - **Dietary restrictions:** none
 
 ## Budget
-- **Monthly food budget:** $500
-- **Target:** 7 dinners per week, stay within monthly budget
+- **Monthly food budget:** $1,400
+- **Weekly target:** ~$350 (monthly ÷ 4 weeks)
+- **Sales tax:** 8.35% — always add to subtotal for true weekly cost
+- **Target:** 7 dinners per week, stay within weekly budget
 
 ## Paths
-- **Dinners folder:** ~/dinners
+- **Dinners folder:** ~/Documents/dinner
 - **Schnucks DB:** ${CLAUDE_PLUGIN_ROOT}/data/schnucks.db
 - **Recipes DB:** ${CLAUDE_PLUGIN_ROOT}/data/recipes.db
 - **Harvester:** ${CLAUDE_PLUGIN_ROOT}/scripts/harvester (Go binary, no dependencies)
