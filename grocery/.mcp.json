@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "schnucks-db": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sqlite",
+        "${CLAUDE_PLUGIN_ROOT}/data/schnucks.db"
+      ]
+    },
+    "recipes-db": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sqlite",
+        "${CLAUDE_PLUGIN_ROOT}/data/recipes.db"
+      ]
+    }
+  }
+}
