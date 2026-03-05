@@ -11,7 +11,8 @@
 - **Target:** 7 dinners per week, stay within weekly budget
 
 ## Paths
-- **Dinners folder:** ~/Documents/dinner
+- **Kitchen folder:** ~/Documents/kitchen
+- **Dinners folder:** ~/Documents/kitchen/dinner
 - **Schnucks DB:** ${CLAUDE_PLUGIN_ROOT}/data/schnucks.db
 - **Recipes DB:** ${CLAUDE_PLUGIN_ROOT}/data/recipes.db
 - **Harvester:** ${CLAUDE_PLUGIN_ROOT}/scripts/harvester (Go binary, no dependencies)

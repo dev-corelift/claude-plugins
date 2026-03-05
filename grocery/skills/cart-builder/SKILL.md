@@ -15,7 +15,7 @@ and generate a clean paste-ready file for Instacart via ChatGPT.
 
 ## Steps
 
-1. **Find current week folder** — look in `~/Documents/dinner/` for the current ISO week (YYYY-WXX)
+1. **Find current week folder** — look in `~/Documents/kitchen/dinner/` for the current ISO week (YYYY-WXX)
    - If not found, tell the user to run meal planning first
 
 2. **Read all recipe files** — read every `*.md` file in the week folder except `meal-plan.md` and `shopping-list.md`

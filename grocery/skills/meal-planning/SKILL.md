@@ -4,7 +4,7 @@ description: >
   This skill should be used when the user asks to "plan meals", "plan this week",
   "what should we eat", "what's for dinner", "make a meal plan", or "plan the week's dinners".
   It generates a 7-dinner weekly plan for a family of 7, priced against live Schnucks data,
-  with full recipes written to ~/Documents/dinner/YYYY-WXX/.
+  with full recipes written to ~/Documents/kitchen/dinner/YYYY-WXX/.
 version: 0.1.0
 ---
 
@@ -25,7 +25,7 @@ Query `SELECT MAX(updated_at) FROM items` via `schnucks-db` MCP:
 - Otherwise → skip. Tell the user: "Schnucks DB last updated X days ago, skipping refresh."
 
 ### Step 3 — Check recent meal history
-Scan `~/dinners/` for the last 4 week folders (YYYY-WXX), read each `meal-plan.md`:
+Scan `~/Documents/kitchen/dinner/` for the last 4 week folders (YYYY-WXX), read each `meal-plan.md`:
 - Extract: meals already made (to avoid repeats), money spent per week
 - Calculate: total spent this month so far, remaining weekly budget
 
@@ -102,7 +102,7 @@ Pick the best 7 from candidates that:
 
 ## Output — What to Write
 
-Create the week folder: `~/dinners/YYYY-WXX/` (use current ISO week number)
+Create the week folder: `~/Documents/kitchen/dinner/YYYY-WXX/` (use current ISO week number)
 
 Write these files:
 
@@ -163,11 +163,36 @@ Write these files:
 Any tips, substitutions, or make-ahead instructions.
 ```
 
+### Step 9 — Add dinners to shared iCloud calendar
+
+After all files are written, create calendar events for each dinner using osascript.
+Use the shared family calendar named "Family" (or the first shared calendar found if "Family" doesn't exist).
+
+For each of the 7 dinners, run:
+```bash
+osascript -e '
+tell application "Calendar"
+  tell calendar "Family"
+    make new event with properties {
+      summary: "[Meal Name]",
+      start date: date "[Weekday Mon D, YYYY] at 6:00 PM",
+      end date: date "[Weekday Mon D, YYYY] at 7:00 PM",
+      description: "Est. cost: $XX.XX | Time: XX min"
+    }
+  end tell
+end tell'
+```
+
+- Set time to 6:00 PM – 7:00 PM each night
+- Title = meal name only (short, readable on phone calendar)
+- Description = estimated cost + cook time
+- If Calendar returns an error, report it but do not fail — files are already written
+
 ### Step 8 — Generate instacart-paste.md
 
 After all dinner files and shopping-list.md are written, run the cart-builder workflow:
 - Consolidate all ingredients across all 7 recipes into a single clean list
-- Write `~/Documents/dinner/YYYY-WXX/instacart-paste.md` (item + quantity only, no prices)
+- Write `~/Documents/kitchen/dinner/YYYY-WXX/instacart-paste.md` (item + quantity only, no prices)
 - This is ready to copy/paste into ChatGPT to build the Instacart cart
 
 ## Handling Swaps

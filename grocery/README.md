@@ -1,6 +1,6 @@
 # Grocery Plugin
 
-Weekly meal planning, coupon stacking, and Instacart cart building for a family of 7.
+Weekly meal planning, coupon stacking, Instacart cart building, and baking for a family of 7.
 
 ## Components
 
@@ -10,6 +10,7 @@ Weekly meal planning, coupon stacking, and Instacart cart building for a family 
 | `/plan-week` | Plan this week's 7 dinners, price them, write recipe files |
 | `/build-cart` | Consolidate ingredients and build Instacart cart |
 | `/deals` | Show this week's best Ibotta coupon stacks |
+| `/bake` | Interactive baking and dessert recipe discovery (Amanda) |
 
 ### Skills (auto-trigger)
 | Skill | Triggers on |
@@ -17,24 +18,37 @@ Weekly meal planning, coupon stacking, and Instacart cart building for a family 
 | `meal-planning` | "plan meals", "what should we eat", "plan this week" |
 | `cart-builder` | "build my cart", "add to Instacart", "shopping list" |
 | `deal-finder` | "deals", "coupons", "what's on sale", "stack coupons" |
+| `dessert` | "baking", "what should I bake", "I want to make something sweet", "pie mood" |
 
 ### MCP Servers
-- `schnucks-db` — SQLite MCP server pointed at the Schnucks deals database
+- `schnucks-db` — Schnucks prices, sales, and Ibotta coupons
+- `recipes-db` — 31,814 recipes from AllRecipes, Serious Eats, Simply Recipes, ATK
 
-## Output
+## Output Structure
 
-All meal plans and recipes are written to `~/dinners/YYYY-WXX/`:
-- `meal-plan.md` — week summary (budget used, meals made)
-- `shopping-list.md` — consolidated ingredient list with prices
-- `monday-meal-name.md` through `sunday-meal-name.md` — printable recipes
+```
+~/Documents/kitchen/
+  dinner/
+    YYYY-WXX/
+      meal-plan.md          ← week summary (budget, meals, tax)
+      shopping-list.md      ← categorized ingredients with prices
+      instacart-paste.md    ← clean paste-ready list for ChatGPT Instacart
+      monday-meal-name.md   ← full recipe, scaled to 7
+      tuesday-meal-name.md
+      ...
+  dessert/
+    YYYY-MM-DD-recipe-name.md
+  breakfast/                ← future
+  lunch/                    ← future
+```
 
 ## Setup
 
-1. Ensure Schnucks DB is populated: run `python3 harvester.py full` from the schnucks folder
+1. Ensure DBs are in `data/` — `schnucks.db` and `recipes.db`
 2. Update `context/household.md` if budget or paths change
-3. When Instacart dev key arrives, add to `.mcp.json`
+3. When Instacart dev key arrives, add MCP to `.mcp.json`
 
 ## Instacart (pending)
 
 Instacart MCP will be added to `.mcp.json` once developer access is approved.
-The cart-builder skill already has the wiring — it will push directly to Instacart when connected.
+The cart-builder skill already has the wiring — it will push directly when connected.
