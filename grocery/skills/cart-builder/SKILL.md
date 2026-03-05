@@ -10,11 +10,12 @@ version: 0.1.0
 
 # Cart Builder
 
-Turn this week's meal plan into a consolidated shopping list mapped to real Schnucks products.
+Turn this week's meal plan into a consolidated shopping list mapped to real Schnucks products,
+and generate a clean paste-ready file for Instacart via ChatGPT.
 
 ## Steps
 
-1. **Find current week folder** — look in `~/dinners/` for the current ISO week (YYYY-WXX)
+1. **Find current week folder** — look in `~/Documents/dinner/` for the current ISO week (YYYY-WXX)
    - If not found, tell the user to run meal planning first
 
 2. **Read all recipe files** — read every `*.md` file in the week folder except `meal-plan.md` and `shopping-list.md`
@@ -27,32 +28,32 @@ Turn this week's meal plan into a consolidated shopping list mapped to real Schn
    - Match by name/brand, get UPC, current price, sale status
    - Flag any items not found in DB (may need manual add)
 
-5. **Price the cart** — sum all items, compare to weekly budget
+5. **Price the cart** — sum all items, apply 8.35% tax, compare to weekly budget
 
-6. **Output**
+6. **Write `shopping-list.md`** — full categorized list with prices (already written by meal-planning, update if re-running)
 
-   If Instacart MCP is connected:
-   - Push cart items to Instacart using full_upc for exact product matching
+7. **Write `instacart-paste.md`** — clean item + quantity only, no prices, no categories, no noise
+   - This is what you copy and paste into ChatGPT to use its Instacart connector
+   - One item per line, quantity first
+
+   If Instacart MCP is connected (future):
+   - Push cart items directly using full_upc for exact product matching
    - Report what was added, what needs manual search
 
-   If Instacart MCP is NOT connected:
-   - Write/update `~/dinners/YYYY-WXX/shopping-list.md` with consolidated list
-   - Format for easy manual Instacart entry or in-store shopping
-
-## Shopping List Format
+## instacart-paste.md Format
 
 ```markdown
-# Shopping List — Week XX
-**Cart total:** $XXX.XX | **Budget:** $XXX.XX remaining
+# Instacart Cart — Week XX
 
-## Meat & Seafood
-- [ ] Chicken thighs, 4 lbs — $X.XX — UPC: XXXXXXXXXXXXXX
-- [ ] Ground beef 80/20, 3 lbs — $X.XX — UPC: XXXXXXXXXXXXXX
-
-## Produce
-- [ ] Garlic, 2 heads — $X.XX
+4 lbs chicken thighs
+1 lb 80/20 ground beef
+2 cans (14.5 oz) diced tomatoes
+1 head garlic
+2 lbs russet potatoes
+1 bunch cilantro
 ...
 
-## Not found in Schnucks DB (add manually)
-- item
+---
+*Items not matched in Schnucks DB — search manually:*
+- specialty item
 ```
