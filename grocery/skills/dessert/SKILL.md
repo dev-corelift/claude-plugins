@@ -107,16 +107,33 @@ Write to `~/Documents/kitchen/dessert/YYYY-MM-DD-recipe-name.md`
 Any tips, substitutions, or make-ahead instructions from the recipe.
 ```
 
-### Step 8 — Wrap up
+### Step 8 — Write baking shopping list
+
+Always write a separate shopping list to `~/Documents/kitchen/dessert/YYYY-MM-DD-recipe-name-shopping-list.md`:
+
+```markdown
+# Baking List — [Recipe Name] — [Date]
+
+## Ingredients to Buy
+- X cups all-purpose flour — ~$X.XX
+- ...
+
+## Probably Already in Pantry
+- baking soda, salt, vanilla extract, butter, sugar, eggs
+```
+
+Query `schnucks-db` to price what you can. Flag common pantry staples separately so she's not buying things she already has.
+
+### Step 9 — Wrap up
 
 Tell her:
-- What you wrote and where it's saved
+- What you wrote and where it's saved (`~/Documents/kitchen/dessert/`)
 - Any tips from the recipe (make-ahead, storage, substitutions)
-- "Want to add ingredients to this week's shopping list?" — if yes, append to `~/Documents/kitchen/dinner/YYYY-WXX/shopping-list.md` and `instacart-paste.md`
+- The baking shopping list is ready separately from the dinner list
 
 ## Rules
 
 - **Keep it short and fun** — this isn't a chore, she's choosing something to bake
 - **Never show more than 6 options at once** — curate, don't overwhelm
 - **Always ask about servings** — scaling matters for baking
-- **Offer to add to shopping list** at the end — ingredients might not be in the pantry
+- **Always write a separate baking shopping list** — never touch the dinner shopping list or instacart-paste

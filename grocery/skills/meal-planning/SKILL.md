@@ -163,32 +163,26 @@ Write these files:
 Any tips, substitutions, or make-ahead instructions.
 ```
 
-### Step 9 — Add dinners to shared iCloud calendar
+### Step 8 — Add dinners to shared iCloud calendar
 
-After all files are written, create calendar events for each dinner using osascript.
-Use the shared family calendar named "Family" (or the first shared calendar found if "Family" doesn't exist).
+After all files are written, create 7 calendar events using osascript targeting the shared "Dinner" calendar.
 
-For each of the 7 dinners, run:
+For each dinner, run:
 ```bash
 osascript -e '
 tell application "Calendar"
-  tell calendar "Family"
-    make new event with properties {
-      summary: "[Meal Name]",
-      start date: date "[Weekday Mon D, YYYY] at 6:00 PM",
-      end date: date "[Weekday Mon D, YYYY] at 7:00 PM",
-      description: "Est. cost: $XX.XX | Time: XX min"
-    }
+  tell calendar "Dinner"
+    make new event with properties {summary:"[Meal Name]", start date:date "[Weekday Mon D, YYYY] at 6:00 PM", end date:date "[Weekday Mon D, YYYY] at 7:00 PM", description:"Est. cost: $XX.XX | Time: XX min"}
   end tell
 end tell'
 ```
 
-- Set time to 6:00 PM – 7:00 PM each night
-- Title = meal name only (short, readable on phone calendar)
+- One event per dinner, 6:00 PM – 7:00 PM on the correct date
+- Title = meal name only (short, readable on phone)
 - Description = estimated cost + cook time
 - If Calendar returns an error, report it but do not fail — files are already written
 
-### Step 8 — Generate instacart-paste.md
+### Step 9 — Generate instacart-paste.md
 
 After all dinner files and shopping-list.md are written, run the cart-builder workflow:
 - Consolidate all ingredients across all 7 recipes into a single clean list
