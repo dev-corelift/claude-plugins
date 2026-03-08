@@ -20,7 +20,7 @@ Read `${CLAUDE_PLUGIN_ROOT}/context/household.md`
 
 ### Step 2 — Check Schnucks DB freshness
 Query `SELECT MAX(updated_at) FROM items` via `schnucks-db` MCP:
-- Today is **Sunday** → always refresh: run `${CLAUDE_PLUGIN_ROOT}/scripts/harvester full`
+- Today is **Tuesday** → always refresh: run `${CLAUDE_PLUGIN_ROOT}/scripts/harvester full`
 - Last update **older than 7 days** → refresh: run `${CLAUDE_PLUGIN_ROOT}/scripts/harvester full`
 - Otherwise → skip. Tell the user: "Schnucks DB last updated X days ago, skipping refresh."
 
