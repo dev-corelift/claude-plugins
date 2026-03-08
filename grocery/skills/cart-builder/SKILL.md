@@ -42,18 +42,32 @@ and generate a clean paste-ready file for Instacart via ChatGPT.
 
 ## instacart-paste.md Format
 
+One item per line. Always include UPC when available, exact brand name, exact size.
+This is pasted directly into ChatGPT's Instacart connector — precision prevents wrong items being added.
+
 ```markdown
 # Instacart Cart — Week XX
 
-4 lbs chicken thighs
-1 lb 80/20 ground beef
-2 cans (14.5 oz) diced tomatoes
-1 head garlic
-2 lbs russet potatoes
-1 bunch cilantro
-...
+## ADD TO CART
+
+- Schnucks Fresh Natural Boneless Skinless Chicken Thighs — 4 lbs | UPC: 041331010254
+- 80% Lean Ground Beef — 2 lbs | UPC: 041331020000
+- Hunt's Diced Tomatoes 14.5 oz — 2 cans | UPC: 027000387627
+- Kraft Shredded Mexican Cheese 8 oz — 1 bag | UPC: 021000015603
+- Gala Apples — 6 loose | PLU: 4135 (loose from produce, NOT bagged)
+- Baby Carrots 16 oz — 1 bag | search: "Grimmway Farms baby carrots 16 oz" (NOT snack combo pack)
 
 ---
-*Items not matched in Schnucks DB — search manually:*
-- specialty item
+
+## NOT IN DB — SEARCH MANUALLY
+
+- Fresh cilantro bunch — search: "cilantro bunch"
+- Specialty item — describe exactly what you need
 ```
+
+**Rules for instacart-paste.md:**
+- Always use `full_upc` from schnucks DB when available
+- Always include exact brand name and package size
+- For produce sold by PLU, include the PLU code and note loose vs bagged
+- If no UPC, write a precise search phrase in quotes so ChatGPT knows exactly what to find
+- Add a warning note for items where a wrong variant is easy to grab (snack pack vs full bag, light vs regular, etc.)

@@ -202,10 +202,15 @@ end tell'
 
 ### Step 9 — Generate instacart-paste.md
 
-After all dinner files and shopping-list.md are written, run the cart-builder workflow:
-- Consolidate all ingredients across all 7 recipes into a single clean list
-- Write `~/Documents/kitchen/dinner/YYYY-WXX/instacart-paste.md` (item + quantity only, no prices)
-- This is ready to copy/paste into ChatGPT to build the Instacart cart
+After all dinner files and shopping-list.md are written, consolidate all ingredients and write
+`~/Documents/kitchen/dinner/YYYY-WXX/instacart-paste.md` using the cart-builder format:
+
+- One item per line with exact brand, size, UPC (from `full_upc` in schnucks DB), and quantity
+- For produce: include PLU code, note loose vs bagged
+- For items with no UPC: write a precise search phrase in quotes
+- Add a warning note on any item where a wrong variant is easy to grab
+- Separate "in DB with UPC" from "search manually" sections
+- This is pasted directly into ChatGPT's Instacart connector — precision prevents wrong items
 
 ## Handling Swaps
 
