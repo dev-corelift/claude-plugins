@@ -8,7 +8,6 @@ Weekly meal planning, coupon stacking, Instacart cart building, and baking for a
 | Command | Description |
 |---------|-------------|
 | `/plan-week` | Plan this week's 7 dinners, price them, write recipe files |
-| `/build-cart` | Consolidate ingredients and build Instacart cart |
 | `/deals` | Show this week's best Ibotta coupon stacks |
 | `/bake` | Interactive baking and dessert recipe discovery (Amanda) |
 
@@ -16,7 +15,6 @@ Weekly meal planning, coupon stacking, Instacart cart building, and baking for a
 | Skill | Triggers on |
 |-------|------------|
 | `meal-planning` | "plan meals", "what should we eat", "plan this week" |
-| `cart-builder` | "build my cart", "add to Instacart", "shopping list" |
 | `deal-finder` | "deals", "coupons", "what's on sale", "stack coupons" |
 | `dessert` | "baking", "what should I bake", "I want to make something sweet", "pie mood" |
 
