@@ -4,7 +4,7 @@ description: >
   This skill should be used when the user asks about "school lunches", "pack lunches",
   "girls lunches", "what should I pack", "lunch ideas for the week", or "plan lunches".
   It plans 5 school day lunches for the girls, kid-friendly, quick to pack, NO peanut butter.
-  Writes files to ~/Documents/kitchen/lunch/YYYY-WXX/.
+  Writes files to ~/Documents/kitchen/YYYY-WXX/lunch/.
 version: 0.1.0
 ---
 
@@ -22,8 +22,14 @@ Plan 5 school day lunches for the girls — kid-friendly, quick to pack, no pean
 Read `${CLAUDE_PLUGIN_ROOT}/context/household.md`
 - Confirm: NO peanut butter — girls cannot bring it to school
 
+### Step 1b — Read budget
+- Read `~/Documents/kitchen/YYYY-WXX/budget.md` if it exists
+- Check what dinner and baking have already claimed this week
+- Remaining lunch budget = $350 minus dinner and baking spend
+- Tell the user what the lunch budget is before suggesting anything
+
 ### Step 2 — Check recent lunch history
-Scan `~/Documents/kitchen/lunch/` for the last 4 week folders, read each `lunch-plan.md`:
+Scan `~/Documents/kitchen/` for the last 4 week folders, read each `YYYY-WXX/lunch/lunch-plan.md`:
 - Extract what was packed recently to avoid repeating the same thing too often
 - Kids get bored fast — don't repeat anything from the last 2 weeks
 
@@ -93,7 +99,7 @@ Handle swaps conversationally. Once approved, move to Phase 2.
 
 ### Step 6 — Write lunch-plan.md
 
-Write to `~/Documents/kitchen/lunch/YYYY-WXX/lunch-plan.md`:
+Write to `~/Documents/kitchen/YYYY-WXX/lunch/lunch-plan.md`:
 
 ```markdown
 # School Lunches — Week XX (Mon MMM D – Fri MMM D)
@@ -109,7 +115,7 @@ Write to `~/Documents/kitchen/lunch/YYYY-WXX/lunch-plan.md`:
 
 ### Step 7 — Write lunch shopping list
 
-Write to `~/Documents/kitchen/lunch/YYYY-WXX/shopping-list.md`.
+Write to `~/Documents/kitchen/YYYY-WXX/lunch/shopping-list.md`.
 Only include what needs to be bought — flag common fridge staples (deli meat, cheese, bread) separately.
 
 ```markdown
@@ -126,9 +132,22 @@ Only include what needs to be bought — flag common fridge staples (deli meat, 
 **Lunch est. total: ~$XX.XX**
 ```
 
-### Step 8 — Confirm
+### Step 8 — Update budget.md and append to instacart-paste.md
 
-Tell the user all files are written to `~/Documents/kitchen/lunch/YYYY-WXX/`.
+Update `~/Documents/kitchen/YYYY-WXX/budget.md` with lunch total.
+
+Append lunch items to `~/Documents/kitchen/YYYY-WXX/instacart-paste.md` (create if dinner hasn't run yet):
+```markdown
+## LUNCH ITEMS
+- item — qty | UPC: XXXX
+- ...
+```
+
+Check if all three categories (dinner, lunch, baking) are now filled in budget.md — if so, append the week to `~/Documents/kitchen/ledger.md`.
+
+### Step 9 — Confirm
+
+Tell the user all files are written to `~/Documents/kitchen/YYYY-WXX/lunch/` and the master instacart paste has been updated.
 
 ---
 

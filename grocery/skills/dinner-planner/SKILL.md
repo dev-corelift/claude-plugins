@@ -4,7 +4,7 @@ description: >
   This skill should be used when the user asks to "plan meals", "plan this week",
   "what should we eat", "what's for dinner", "make a meal plan", or "plan the week's dinners".
   It generates a 7-dinner weekly plan for a family of 7, priced against live Schnucks data,
-  with full recipes written to ~/Documents/kitchen/dinner/YYYY-WXX/.
+  with full recipes written to ~/Documents/kitchen/YYYY-WXX/dinner/.
 version: 0.1.0
 ---
 
@@ -20,7 +20,13 @@ Plan 7 dinners for a family of 7, within budget, avoiding recent repeats, with f
 
 ### Step 1 — Load household config
 Read `${CLAUDE_PLUGIN_ROOT}/context/household.md`
-- Family size, dietary restrictions, monthly budget, dinners folder path, DB paths
+- Family size, dietary restrictions, monthly budget, paths, DB locations
+
+### Step 1b — Read ledger and budget
+- Read `~/Documents/kitchen/ledger.md` — check total spent this month vs $1,400 monthly budget
+- Read `~/Documents/kitchen/YYYY-WXX/budget.md` if it exists — check what lunch/baking have already claimed this week
+- Calculate: remaining weekly budget = $350 minus any already-logged lunch or baking spend
+- Tell the user: "This week's budget: $350. [Lunch: $XX, Baking: $XX already planned.] Dinner budget: $XXX remaining."
 
 ### Step 2 — Check Schnucks DB freshness
 Query `SELECT MAX(updated_at) FROM items` via `schnucks-db` MCP:
@@ -29,7 +35,7 @@ Query `SELECT MAX(updated_at) FROM items` via `schnucks-db` MCP:
 - Otherwise → skip. Tell the user: "Schnucks DB last updated X days ago, skipping refresh."
 
 ### Step 3 — Check recent meal history
-Scan `~/Documents/kitchen/dinner/` for the last 4 week folders (YYYY-WXX), read each `meal-plan.md`:
+Scan `~/Documents/kitchen/` for the last 4 week folders (YYYY-WXX), read each `dinner/meal-plan.md`:
 - Extract: meals already made (to avoid repeats), money spent per week
 - Calculate: total spent this month so far, remaining weekly budget
 
@@ -180,7 +186,7 @@ Ready to write files and add to calendar?
 
 ### Step 10 — Write all files
 
-Create `~/Documents/kitchen/dinner/YYYY-WXX/` and write:
+Create `~/Documents/kitchen/YYYY-WXX/dinner/` and write:
 
 **meal-plan.md**
 ```markdown
@@ -227,7 +233,7 @@ Create `~/Documents/kitchen/dinner/YYYY-WXX/` and write:
 Tips, substitutions, make-ahead instructions.
 ```
 
-**instacart-paste.md** — one item per line, exact brand + size + UPC, ready to paste into ChatGPT
+**`~/Documents/kitchen/YYYY-WXX/instacart-paste.md`** — combined master paste for the whole week. Dinner items go here. Lunch and baking append to the same file when planned. One item per line, exact brand + size + UPC, ready to paste into ChatGPT
 ```markdown
 # Instacart Cart — Week XX
 
@@ -240,6 +246,24 @@ Tips, substitutions, make-ahead instructions.
 ## NOT IN DB — SEARCH MANUALLY
 - Fresh cilantro bunch — search: "cilantro bunch"
 ```
+
+### Step 10b — Update budget.md and ledger.md
+
+Write/update `~/Documents/kitchen/YYYY-WXX/budget.md`:
+```markdown
+# Week Budget — YYYY-WXX
+**Weekly target:** $350.00
+
+| Category | Estimated | Status |
+|----------|-----------|--------|
+| Dinner   | $XXX.XX   | approved |
+| Lunch    | $XX.XX    | [status from existing file or —] |
+| Baking   | $XX.XX    | [status from existing file or —] |
+| **Total** | **$XXX.XX** | |
+| **Remaining** | **$XXX.XX** | |
+```
+
+Append to `~/Documents/kitchen/ledger.md` only when all three categories are filled in for the week. Otherwise leave it — lunch or baking may not be planned yet.
 
 ### Step 11 — Create iCal events
 
