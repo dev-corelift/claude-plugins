@@ -13,10 +13,23 @@
 
 ## Paths
 - **Kitchen folder:** ~/Documents/kitchen
-- **Dinners folder:** ~/Documents/kitchen/dinner
+- **Week folders:** ~/Documents/kitchen/YYYY-WXX/ (week is top-level organizer)
+  - dinner/ — 7 dinner recipe files + meal-plan.md + shopping-list.md
+  - lunch/ — 5 lunch files + lunch-plan.md + shopping-list.md
+  - dessert/ — baking recipes + shopping lists
+  - budget.md — shared weekly budget across all three categories
+  - instacart-paste.md — combined master paste for the whole week
+- **Ledger:** ~/Documents/kitchen/ledger.md (permanent running record, never delete)
 - **Schnucks DB:** ${CLAUDE_PLUGIN_ROOT}/data/schnucks.db
 - **Recipes DB:** ${CLAUDE_PLUGIN_ROOT}/data/recipes.db
 - **Harvester:** ${CLAUDE_PLUGIN_ROOT}/scripts/harvester (Go binary, no dependencies)
+
+## Budget Tracking
+- Weekly budget is a **shared pool** across dinner + lunch + baking — $350/week total
+- Each planner reads `budget.md` at start to see what's left before proposing a plan
+- Each planner writes its approved total back to `budget.md` after approval
+- After all shopping is done, the week's totals get appended to `ledger.md`
+- `ledger.md` tracks week-over-week and month-over-month spend — never delete it
 
 ## Schnucks DB Schema (quick reference)
 - `items` — upc_id, name, brand_name, regular_price, sale_price, full_upc, aisle

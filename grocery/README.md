@@ -7,7 +7,7 @@ Weekly dinner planning, school lunches, coupon stacking, and baking for a family
 ### Commands
 | Command | Description |
 |---------|-------------|
-| `/plan-week` | Plan this week's 7 dinners, price them, write recipe files |
+| `/plan-dinner` | Plan this week's 7 dinners, price them, write recipe files |
 | `/plan-lunches` | Plan this week's 5 school day lunches for the girls |
 | `/deals` | Show this week's best Ibotta coupon stacks |
 | `/bake` | Menu-driven baking and dessert recipe discovery (Amanda) |
@@ -28,21 +28,21 @@ Weekly dinner planning, school lunches, coupon stacking, and baking for a family
 
 ```
 ~/Documents/kitchen/
-  dinner/
-    YYYY-WXX/
-      meal-plan.md          ← week summary (budget, meals, tax)
-      shopping-list.md      ← categorized ingredients with prices
-      instacart-paste.md    ← clean paste-ready list for ChatGPT Instacart
-      monday-meal-name.md   ← full recipe, scaled to 7
-      tuesday-meal-name.md
+  ledger.md                 ← permanent week-over-week spending record
+  YYYY-WXX/
+    budget.md               ← shared $350 pool across dinner + lunch + baking
+    instacart-paste.md      ← combined master paste for the whole week
+    dinner/
+      meal-plan.md
+      shopping-list.md
+      monday-meal-name.md
       ...
-  lunch/
-    YYYY-WXX/
-      lunch-plan.md         ← 5-day lunch summary
-      shopping-list.md      ← lunch-only shopping list
-  dessert/
-    YYYY-MM-DD-recipe-name.md
-    YYYY-MM-DD-recipe-name-shopping-list.md
+    lunch/
+      lunch-plan.md
+      shopping-list.md
+    dessert/
+      YYYY-MM-DD-recipe-name.md
+      YYYY-MM-DD-recipe-name-shopping-list.md
   breakfast/                ← future
 ```
 

@@ -5,7 +5,7 @@ description: >
   "I want to make something sweet", "I'm in a pie mood", "cake ideas", "cookies", "Amanda bake",
   or any mention of baking or sweet recipes.
   It guides Amanda through a fully menu-driven selection flow — no typing required at any step.
-  Write the full recipe to ~/Documents/kitchen/dessert/.
+  Write the full recipe to ~/Documents/kitchen/YYYY-WXX/dessert/.
 version: 0.1.0
 ---
 
@@ -18,9 +18,15 @@ Fully menu-driven baking recipe discovery for Amanda.
 
 ## Interaction Flow
 
-### Step 1 — Mood menu
+### Step 1 — Welcome Amanda + mood menu
+
+Always open by addressing Amanda by name with warmth, then deliver Justin's message, then go straight into the menu. Keep it light and fun.
 
 ```
+Hi Amanda! 🎂 Let's find you something amazing to bake.
+
+By the way, Justin says Love you Babe 🥰
+
 What are you in the mood to bake?
 
   1. 🥧 Pie or tart
@@ -28,7 +34,7 @@ What are you in the mood to bake?
   3. 🍪 Cookies or bars
   4. 🍮 Something creamy (cheesecake, pudding, mousse, custard)
   5. 🍩 Fried or yeasted (donuts, babka, cinnamon rolls)
-  6. 🎲 Surprise me
+  6. 🎲 Surprise me!
 ```
 
 ### Step 2 — Refine menu
@@ -133,12 +139,18 @@ SELECT text FROM steps WHERE recipe_id = ? ORDER BY position;
 
 Scale all quantities to the selected serving size.
 
+### Step 6b — Check budget before confirming
+
+Read `~/Documents/kitchen/YYYY-WXX/budget.md` — show Amanda what's left in this week's pool before committing.
+Price the baking ingredients against `schnucks-db` to get an estimated cost.
+
 ### Step 7 — Confirm before writing
 
 ```
 Ready to save?
 
-  Brown Butter Pecan Pie — serves 7 — 75 min
+  Brown Butter Pecan Pie — serves 7 — 75 min — est. $XX.XX
+  Week budget remaining: $XXX.XX
 
   1. ✅ Yes, save recipe + shopping list
   2. 🔄 Pick a different recipe instead
@@ -146,7 +158,7 @@ Ready to save?
 
 ### Step 8 — Write recipe file
 
-Write to `~/Documents/kitchen/dessert/YYYY-MM-DD-recipe-name.md`:
+Write to `~/Documents/kitchen/YYYY-WXX/dessert/YYYY-MM-DD-recipe-name.md`:
 
 ```markdown
 # [Recipe Name]
@@ -163,10 +175,31 @@ Write to `~/Documents/kitchen/dessert/YYYY-MM-DD-recipe-name.md`:
 Tips, substitutions, make-ahead instructions.
 ```
 
-### Step 9 — Write baking shopping list
+### Step 9 — Shopping decision menu
 
-Always write separately to `~/Documents/kitchen/dessert/YYYY-MM-DD-recipe-name-shopping-list.md`.
-Never touch dinner shopping lists or instacart-paste.
+```
+Do you need to pick up ingredients, Amanda?
+
+  1. 🏠 I have everything at home
+  2. 🛒 Add to this week's Instacart order
+  3. 🚗 Separate quick run
+```
+
+**Option 1 — Have everything:**
+- Skip shopping list entirely
+- Just write the recipe file
+- Do not touch budget.md or instacart-paste.md
+
+**Option 2 — Add to weekly Instacart order:**
+- Write `~/Documents/kitchen/YYYY-WXX/dessert/YYYY-MM-DD-recipe-name-shopping-list.md`
+- Append baking items to `~/Documents/kitchen/YYYY-WXX/instacart-paste.md` under `## BAKING ITEMS`
+- Update `~/Documents/kitchen/YYYY-WXX/budget.md` with baking total
+- Check if all three categories filled — if so, append week to `~/Documents/kitchen/ledger.md`
+
+**Option 3 — Separate quick run:**
+- Write `~/Documents/kitchen/YYYY-WXX/dessert/YYYY-MM-DD-quick-run.md` (standalone list, not part of Instacart order)
+- Do NOT append to instacart-paste.md or update budget.md
+- Format as a simple grab-and-go list for the store
 
 ```markdown
 # Baking List — [Recipe Name] — [Date]
@@ -187,7 +220,7 @@ Query `schnucks-db` to price what you can. Flag pantry staples separately.
 All saved! ✅
 
   Brown Butter Pecan Pie — 7 servings — 75 min
-  ~/Documents/kitchen/dessert/
+  ~/Documents/kitchen/YYYY-WXX/dessert/
 
   1. 🛒 View shopping list
   2. 🎂 Find another recipe

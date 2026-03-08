@@ -3,7 +3,7 @@ description: Plan this week's 7 dinners, price them, write recipe files
 allowed-tools: Read, Write, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/harvester:*), Bash(osascript:*), mcp__schnucks-db__*, mcp__recipes-db__*
 ---
 
-# Plan This Week's Meals
+# Plan Dinners
 
 Trigger the dinner-planner skill to generate this week's dinner plan.
 
