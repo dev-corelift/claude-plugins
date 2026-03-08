@@ -6,3 +6,5 @@ grocery/scripts/go.sum
 
 # macOS
 .DS_Store
+grocery/data/*.db-shm
+grocery/data/*.db-wal
