@@ -30,24 +30,42 @@ Scan `~/Documents/kitchen/dinner/` for the last 4 week folders (YYYY-WXX), read 
 - Calculate: total spent this month so far, remaining weekly budget
 
 ### Step 4 — Find recipe candidates from recipes.db
-Query `recipes-db` MCP to find 20-30 candidates:
+
+Run **7 separate queries** — one per protein/category — each pulling a small random pool.
+This forces variety across the week instead of always surfacing the same top-rated recipes.
+
 ```sql
-SELECT r.id, r.name, r.total_mins, r.yield_servings, r.calories, r.rating, r.rating_count,
+-- Run once per category, swapping the tag filter each time
+-- Categories to hit across the 7 queries: chicken, beef, pork, seafood, pasta, vegetarian, soup/stew
+SELECT r.id, r.name, r.total_mins, r.yield_servings, r.rating, r.rating_count,
        GROUP_CONCAT(CASE WHEN t.type='category' THEN t.value END) as categories,
        GROUP_CONCAT(CASE WHEN t.type='cuisine' THEN t.value END) as cuisines
 FROM recipes r
 LEFT JOIN tags t ON t.recipe_id = r.id
 WHERE r.rating >= 4.0
-  AND r.rating_count >= 25
+  AND r.rating_count >= 15
   AND r.total_mins <= 60
   AND r.total_mins IS NOT NULL
+  AND r.id IN (
+    SELECT recipe_id FROM tags
+    WHERE type = 'category' AND value LIKE '%[chicken|beef|pork|seafood|pasta|vegetarian|soup]%'
+  )
 GROUP BY r.id
-ORDER BY r.rating DESC, r.rating_count DESC
-LIMIT 200
+ORDER BY RANDOM()
+LIMIT 10
 ```
-- Filter out any meals made in the last 3 weeks
-- Pick 20-30 diverse candidates covering Dinner, mixing proteins and cuisines
-- For Sunday, allow total_mins up to 90 (bigger meal ok)
+
+- From each pool of 10, pick the 1 best fit (good rating, not made recently, interesting)
+- Filter out anything made in the last 3 weeks
+- For Sunday, allow `total_mins <= 90`
+- **Never sort by rating DESC across the full DB** — this is what causes repetition
+
+**Variety rules across the 7 picks:**
+- Max 2 chicken dishes
+- Max 1 beef, 1 pork, 1 seafood
+- At least 1 fully vegetarian
+- At least 2 different cuisine styles (Mexican, Asian, Italian, American, Mediterranean, etc.)
+- No two dishes with the same primary cooking method (all baked, all stovetop, etc.)
 
 ### Step 5 — Fetch full recipe details
 For each of the 7 chosen recipes, query:
