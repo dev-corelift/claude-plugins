@@ -92,5 +92,5 @@ P&G brands: Tide, Gain, Downy, Bounty, Charmin, Pampers, Gillette, Oral B, Olay,
 ## Notes
 
 - Rate limit: 0.3s between requests (harvester enforces this)
-- Coupons reset weekly — refresh on Sundays
+- Coupons reset weekly — refresh on Tuesdays
 - `couponIds` on items directly links to coupon `id` — no fuzzy matching needed
