@@ -12,7 +12,11 @@ version: 0.1.0
 
 Plan 7 dinners for a family of 7, within budget, avoiding recent repeats, with full printable recipes.
 
-## Workflow
+**Two phases — nothing gets written until the user approves both the meal selection AND the shopping list.**
+
+---
+
+## PHASE 1 — Discovery (no file writes)
 
 ### Step 1 — Load household config
 Read `${CLAUDE_PLUGIN_ROOT}/context/household.md`
@@ -29,14 +33,29 @@ Scan `~/Documents/kitchen/dinner/` for the last 4 week folders (YYYY-WXX), read 
 - Extract: meals already made (to avoid repeats), money spent per week
 - Calculate: total spent this month so far, remaining weekly budget
 
-### Step 4 — Find recipe candidates from recipes.db
-
-Run **7 separate queries** — one per protein/category — each pulling a small random pool.
-This forces variety across the week instead of always surfacing the same top-rated recipes.
+### Step 4 — Check what's on sale this week
+Query `schnucks-db` for items currently on sale (sale_price IS NOT NULL):
+- Focus on proteins: chicken, beef, pork, seafood
+- Note sale items as a soft preference — **not a hard requirement**
+- Sale items get a small boost in recipe selection, but recipe quality and variety come first
 
 ```sql
--- Run once per category, swapping the tag filter each time
--- Categories to hit across the 7 queries: chicken, beef, pork, seafood, pasta, vegetarian, soup/stew
+SELECT name, brand_name, regular_price, sale_price, aisle
+FROM items
+WHERE sale_price IS NOT NULL
+  AND aisle IN ('Meat', 'MEAT F', 'MEAT &', 'Seafood', 'Produce')
+ORDER BY (regular_price - sale_price) DESC
+LIMIT 30
+```
+
+### Step 5 — Find recipe candidates from recipes.db
+
+Run **7 separate queries** — one per protein/category — each pulling a random pool.
+This forces variety and prevents always surfacing the same top-rated recipes.
+
+**Categories to target across the 7 queries:** chicken, beef, pork, seafood, pasta, vegetarian, soup/stew
+
+```sql
 SELECT r.id, r.name, r.total_mins, r.yield_servings, r.rating, r.rating_count,
        GROUP_CONCAT(CASE WHEN t.type='category' THEN t.value END) as categories,
        GROUP_CONCAT(CASE WHEN t.type='cuisine' THEN t.value END) as cuisines
@@ -48,93 +67,130 @@ WHERE r.rating >= 4.0
   AND r.total_mins IS NOT NULL
   AND r.id IN (
     SELECT recipe_id FROM tags
-    WHERE type = 'category' AND value LIKE '%[chicken|beef|pork|seafood|pasta|vegetarian|soup]%'
+    WHERE type = 'category' AND value LIKE '%[category]%'
   )
 GROUP BY r.id
 ORDER BY RANDOM()
 LIMIT 10
 ```
 
-- From each pool of 10, pick the 1 best fit (good rating, not made recently, interesting)
+- From each pool of 10, pick the 1 best fit
 - Filter out anything made in the last 3 weeks
+- **Give a mild preference** to recipes whose primary protein is on sale this week — but do NOT sacrifice recipe quality or variety for a sale item
 - For Sunday, allow `total_mins <= 90`
-- **Never sort by rating DESC across the full DB** — this is what causes repetition
+- **Never sort by rating DESC across the full DB** — this causes repetition
 
 **Variety rules across the 7 picks:**
 - Max 2 chicken dishes
 - Max 1 beef, 1 pork, 1 seafood
 - At least 1 fully vegetarian
 - At least 2 different cuisine styles (Mexican, Asian, Italian, American, Mediterranean, etc.)
-- No two dishes with the same primary cooking method (all baked, all stovetop, etc.)
+- No two dishes with the same primary cooking method
 
-### Step 5 — Fetch full recipe details
-For each of the 7 chosen recipes, query:
+### Step 6 — Present proposed meals for approval
+
+Show the 7 proposed meals. **Wait for approval before going further.**
+
+```
+Here's this week's proposed plan:
+
+Mon — Chicken Tikka Masala         45 min | 4.7★ | ~$18
+Tue — Beef & Broccoli Stir Fry     30 min | 4.6★ | ~$22  🏷️ beef on sale
+Wed — Pasta Primavera (veg)        25 min | 4.5★ | ~$12
+Thu — Sheet Pan Pork Tenderloin    40 min | 4.8★ | ~$20
+Fri — Shrimp Tacos                 30 min | 4.6★ | ~$24
+Sat — Slow Cooker Chicken Soup     60 min | 4.7★ | ~$16
+Sun — Lasagna                      90 min | 4.9★ | ~$28
+
+Est. total: ~$140 + tax | Budget: $350
+
+Approve this plan, or tell me what to swap.
+```
+
+🏷️ flag = primary protein is on sale this week
+
+Handle swaps here conversationally before moving on. See "Handling Swaps" section below.
+
+### Step 7 — Fetch full recipe details (after approval)
+
+For each approved recipe:
 ```sql
 SELECT text FROM ingredients WHERE recipe_id = ? ORDER BY position;
 SELECT text FROM steps WHERE recipe_id = ? ORDER BY position;
 ```
 
-### Step 6 — Price ingredients against Schnucks
+### Step 8 — Price ingredients against Schnucks
+
 For each recipe's ingredient list, query `schnucks-db` MCP:
-- Match ingredient name against `items.name` — use the sale_price if available, otherwise regular_price
+- Match ingredient name against `items.name` — use sale_price if available, otherwise regular_price
 - Flag any ingredients with active Ibotta coupons as savings opportunities
 
-**Pricing rules — items are priced differently based on how Schnucks sells them:**
+**Pricing rules:**
 
-1. **Fresh meat (per-lb price)** — items in `aisle = 'MEAT F'` with NO size in parentheses in the name
-   - e.g. `Schnucks - Fresh Natural Boneless Skinless Chicken Thighs` at $4.79
-   - Price IS per lb → multiply by lbs needed after scaling to 7 servings
-   - Example: recipe needs 1.5 lbs for 4 servings → scale to 7 → 2.625 lbs → $4.79 × 2.625 = $12.57
+1. **Fresh meat (per-lb)** — aisle `MEAT F`, no size in parentheses in name
+   - Price IS per lb → multiply by lbs needed scaled to 7 servings
+   - Example: 1.5 lbs for 4 servings → scale to 7 → 2.625 lbs × $4.79 = $12.57
 
-2. **Packaged meat/frozen** — items with `(X Oz)` or `(X Lb)` in name
-   - e.g. `Schnucks - Frozen Bagged Boneless Skinless Chicken Breast (48 Oz)` at $10.99
-   - Price is per package → calculate lbs needed (scaled to 7), divide by package size, round up to whole packages
-   - Example: need 3 lbs → 48 Oz = 3 lbs → 1 package → $10.99
+2. **Packaged meat/frozen** — has `(X Oz)` or `(X Lb)` in name
+   - Price is per package → calculate lbs needed, divide by package size, round up
+   - Example: need 3 lbs, package is 48 Oz (3 lbs) → 1 package → $10.99
 
-3. **Produce — per-unit items** — peppers, cucumbers, limes, onions, garlic, etc. (sold individually)
-   - Price is per each → estimate count needed scaled to 7 servings
-   - Example: recipe calls for 2 bell peppers for 4 → scale to 7 → ~4 peppers → $0.99 × 4 = $3.96
+3. **Produce — per-unit** — peppers, cucumbers, limes, onions, garlic (sold individually)
+   - Price per each → scale count to 7 servings
 
-4. **Produce — per-lb items** — bananas, loose carrots, potatoes, etc. (no unit count in recipe)
-   - Price is per lb → multiply by lbs needed scaled to 7 servings
+4. **Produce — per-lb** — bananas, carrots, potatoes (sold by weight)
+   - Price per lb → multiply by lbs needed scaled to 7
 
 5. **Pantry/packaged goods** — canned goods, pasta, spices, sauces
-   - Price is per package/can/bottle → estimate how many packages needed for scaled recipe
+   - Price per package → estimate packages needed for scaled recipe
 
-**When in doubt:** if the ingredient text has an explicit weight (lbs/oz), use weight-based math. If it has a count (2 peppers, 3 cloves), use count-based math scaled to 7.
+**When in doubt:** explicit weight in recipe = weight math; count in recipe = count math, scaled to 7.
 
-### Step 7 — Select final 7 meals
-Pick the best 7 from candidates that:
-- Stay within remaining weekly budget combined
-- Mix proteins across the week (no more than 2 chicken, 1 beef, 1 pork, etc.)
-- Include at least 1 vegetarian meal
-- Include breakfast-for-dinner or a lighter meal mid-week if budget is tight
+### Step 9 — Present shopping list for approval
 
-## Planning Rules
+Show the consolidated shopping list with totals. **Wait for approval before writing any files.**
 
-- **Never repeat** a meal made in the last 3 weeks
-- **Stay under** remaining weekly budget (monthly budget minus weeks already spent)
-- **Variety** — mix proteins and cuisines across the week
-- **Realistic** — weeknight meals 30-45 min; one bigger Sunday meal ok (up to 90 min)
-- **Family of 7** — scale all recipe quantities accordingly
+```
+Shopping list for the week:
 
-## Output — What to Write
+MEAT & SEAFOOD
+  Chicken thighs (fresh, ~3.5 lbs)     $6.97   Schnucks $1.99/lb
+  Ground beef 80% lean (~2 lbs)        $13.98  on sale
+  Shrimp, 1 lb                         $9.99
+  Pork tenderloin, ~2 lbs              $9.58
 
-Create the week folder: `~/Documents/kitchen/dinner/YYYY-WXX/` (use current ISO week number)
+PRODUCE
+  ...
 
-Write these files:
+PANTRY
+  ...
 
-### meal-plan.md (summary — this is what future weeks will read back)
+Subtotal:  $XXX.XX
+Tax 8.35%: $XX.XX
+Total:     $XXX.XX  (Budget remaining: $XXX.XX)
 
+Ibotta savings available: [list any]
+
+Ready to write files and add to calendar?
+```
+
+---
+
+## PHASE 2 — Commit (only after approval)
+
+### Step 10 — Write all files
+
+Create `~/Documents/kitchen/dinner/YYYY-WXX/` and write:
+
+**meal-plan.md**
 ```markdown
 # Week XX — Mon MMM D - Sun MMM D, YYYY
 **Subtotal:** $XXX.XX | **Tax (8.35%):** $XX.XX | **Total:** $XXX.XX
 **Meals:** meal one, meal two, meal three, meal four, meal five, meal six, meal seven
-**Notes:** any relevant notes (e.g. had extra budget, skipped Sunday)
+**Notes:** any relevant notes
 ```
 
-### shopping-list.md (consolidated ingredients)
-
+**shopping-list.md**
 ```markdown
 # Shopping List — Week XX
 
@@ -149,43 +205,45 @@ Write these files:
 ## Produce
 - item, qty, ~$X.XX
 
-## Dairy
-...
-
-## Pantry & Canned
-...
-
-## Pantry Staples (if needed)
+## Dairy / Pantry / etc.
 ...
 
 ## Savings This Week
 - item on sale — save $X.XX
 ```
 
-### One file per dinner: `monday-meal-name.md`, `tuesday-meal-name.md`, etc.
-
+**One file per dinner:** `monday-meal-name.md` through `sunday-meal-name.md`
 ```markdown
 # [Meal Name] — [Day] [Date]
 **Serves:** 7 | **Est. Cost:** $XX.XX | **Time:** XX min
 
 ## Ingredients
 - X lbs item — $X.XX (Schnucks[, on sale])
-- ...
 
 ## Steps
-1. Step one
-2. Step two
-3. ...
+1. ...
 
 ## Notes
-Any tips, substitutions, or make-ahead instructions.
+Tips, substitutions, make-ahead instructions.
 ```
 
-### Step 8 — Add dinners to shared iCloud calendar
+**instacart-paste.md** — one item per line, exact brand + size + UPC, ready to paste into ChatGPT
+```markdown
+# Instacart Cart — Week XX
 
-After all files are written, create 7 calendar events using osascript targeting the shared "Dinner" calendar.
+## ADD TO CART
+- Schnucks Fresh Natural Boneless Skinless Chicken Thighs — 4 lbs | UPC: 041331010254
+- 80% Lean Ground Beef — 2 lbs | UPC: 041331020000
+- Gala Apples — 6 loose | PLU: 4135 (loose from produce, NOT bagged)
 
-For each dinner, run:
+---
+## NOT IN DB — SEARCH MANUALLY
+- Fresh cilantro bunch — search: "cilantro bunch"
+```
+
+### Step 11 — Create iCal events
+
+For each dinner, create a calendar event in the "Dinner" calendar:
 ```bash
 osascript -e '
 tell application "Calendar"
@@ -194,47 +252,27 @@ tell application "Calendar"
   end tell
 end tell'
 ```
+- If Calendar errors, report it but do not fail — files are already written
 
-- One event per dinner, 6:00 PM – 7:00 PM on the correct date
-- Title = meal name only (short, readable on phone)
-- Description = estimated cost + cook time
-- If Calendar returns an error, report it but do not fail — files are already written
+### Step 12 — Confirm
 
-### Step 9 — Generate instacart-paste.md
+Tell the user all files are written, where they are, and any savings highlights for the week.
 
-After all dinner files and shopping-list.md are written, consolidate all ingredients and write
-`~/Documents/kitchen/dinner/YYYY-WXX/instacart-paste.md` using the cart-builder format:
-
-- One item per line with exact brand, size, UPC (from `full_upc` in schnucks DB), and quantity
-- For produce: include PLU code, note loose vs bagged
-- For items with no UPC: write a precise search phrase in quotes
-- Add a warning note on any item where a wrong variant is easy to grab
-- Separate "in DB with UPC" from "search manually" sections
-- This is pasted directly into ChatGPT's Instacart connector — precision prevents wrong items
+---
 
 ## Handling Swaps
 
-If the user says anything like "swap that out", "replace Tuesday's dinner", "I don't like that one", or names a specific meal to change:
+If the user wants to swap a meal (at Step 6 or any time after):
 
-1. **Pick a replacement** from the already-queried candidate list (or re-query if needed)
-   - Must not repeat anything from the last 3 weeks
-   - Must fit within remaining budget after removing the swapped meal's cost
-   - Respect protein variety rules (don't create a 3rd chicken if swapping to chicken)
+1. Pick a replacement — must not repeat last 3 weeks, fit budget, respect variety rules
+2. If files already written: rewrite that dinner file, update meal-plan.md, regenerate shopping-list.md and instacart-paste.md
+3. Tell the user the new meal, cost difference, and confirm files are updated
 
-2. **Rewrite the dinner file** — delete the old day's file, write the new one with full ingredients + steps
+## Planning Rules
 
-3. **Update `meal-plan.md`** — replace the swapped meal name, adjust subtotal/tax/total if cost changed
-
-4. **Regenerate `shopping-list.md`** — remove ingredients only used in the old meal, add new ones, re-tally totals
-
-5. **Regenerate `instacart-paste.md`** — full fresh rebuild from the updated recipe set
-
-Tell the user the new meal, estimated cost difference, and confirm all files are updated.
-
-## After Writing
-
-Tell the user:
-- The week's 7 meals with estimated cost each
-- Total weekly spend vs budget remaining
-- Any meals that are especially cheap or use good coupon deals this week
-- Confirm all files are written and where to find them
+- **Never repeat** a meal made in the last 3 weeks
+- **Stay under** remaining weekly budget
+- **Sales are a bonus, not the criteria** — pick great recipes first, prefer sale proteins when quality is equal
+- **Variety** — mix proteins and cuisines across the week
+- **Realistic** — weeknight meals 30-45 min; Sunday up to 90 min ok
+- **Family of 7** — scale all recipe quantities accordingly
