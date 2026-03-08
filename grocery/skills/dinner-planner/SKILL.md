@@ -1,5 +1,5 @@
 ---
-name: meal-planning
+name: dinner-planner
 description: >
   This skill should be used when the user asks to "plan meals", "plan this week",
   "what should we eat", "what's for dinner", "make a meal plan", or "plan the week's dinners".

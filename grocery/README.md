@@ -1,6 +1,6 @@
 # Grocery Plugin
 
-Weekly meal planning, coupon stacking, Instacart cart building, and baking for a family of 7.
+Weekly dinner planning, school lunches, coupon stacking, and baking for a family of 7.
 
 ## Components
 
@@ -8,15 +8,17 @@ Weekly meal planning, coupon stacking, Instacart cart building, and baking for a
 | Command | Description |
 |---------|-------------|
 | `/plan-week` | Plan this week's 7 dinners, price them, write recipe files |
+| `/plan-lunches` | Plan this week's 5 school day lunches for the girls |
 | `/deals` | Show this week's best Ibotta coupon stacks |
-| `/bake` | Interactive baking and dessert recipe discovery (Amanda) |
+| `/bake` | Menu-driven baking and dessert recipe discovery (Amanda) |
 
 ### Skills (auto-trigger)
 | Skill | Triggers on |
 |-------|------------|
-| `meal-planning` | "plan meals", "what should we eat", "plan this week" |
+| `dinner-planner` | "plan meals", "what should we eat", "plan this week", "what's for dinner" |
+| `lunch-planner` | "school lunches", "pack lunches", "girls lunches", "what should I pack" |
 | `deal-finder` | "deals", "coupons", "what's on sale", "stack coupons" |
-| `dessert` | "baking", "what should I bake", "I want to make something sweet", "pie mood" |
+| `dessert-planner` | "baking", "what should I bake", "I want to make something sweet", "pie mood" |
 
 ### MCP Servers
 - `schnucks-db` — Schnucks prices, sales, and Ibotta coupons
@@ -34,10 +36,14 @@ Weekly meal planning, coupon stacking, Instacart cart building, and baking for a
       monday-meal-name.md   ← full recipe, scaled to 7
       tuesday-meal-name.md
       ...
+  lunch/
+    YYYY-WXX/
+      lunch-plan.md         ← 5-day lunch summary
+      shopping-list.md      ← lunch-only shopping list
   dessert/
     YYYY-MM-DD-recipe-name.md
+    YYYY-MM-DD-recipe-name-shopping-list.md
   breakfast/                ← future
-  lunch/                    ← future
 ```
 
 ## Setup
@@ -49,4 +55,3 @@ Weekly meal planning, coupon stacking, Instacart cart building, and baking for a
 ## Instacart (pending)
 
 Instacart MCP will be added to `.mcp.json` once developer access is approved.
-The cart-builder skill already has the wiring — it will push directly when connected.
