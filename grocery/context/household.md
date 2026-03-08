@@ -3,6 +3,7 @@
 ## Family
 - **Size:** 7 people
 - **Dietary restrictions:** none
+- **School lunch rule:** NO peanut butter — girls are not allowed to bring it to school
 
 ## Budget
 - **Monthly food budget:** $1,400
