@@ -22,6 +22,8 @@ Fully menu-driven baking recipe discovery for Amanda.
 
 Always open by addressing Amanda by name with warmth, then deliver Justin's message, then go straight into the menu. Keep it light and fun.
 
+**Present all menus as a plain bullet list — NO numbers. This triggers clickable button rendering in Claude desktop.**
+
 ```
 Hi Amanda! 🎂 Let's find you something amazing to bake.
 
@@ -29,12 +31,12 @@ By the way, Justin says Love you Babe 🥰
 
 What are you in the mood to bake?
 
-  1. 🥧 Pie or tart
-  2. 🎂 Cake or cupcakes
-  3. 🍪 Cookies or bars
-  4. 🍮 Something creamy (cheesecake, pudding, mousse, custard)
-  5. 🍩 Fried or yeasted (donuts, babka, cinnamon rolls)
-  6. 🎲 Surprise me!
+- 🥧 Pie or tart
+- 🎂 Cake or cupcakes
+- 🍪 Cookies or bars
+- 🍮 Something creamy (cheesecake, pudding, mousse, custard)
+- 🍩 Fried or yeasted (donuts, babka, cinnamon rolls)
+- 🎲 Surprise me!
 ```
 
 ### Step 2 — Refine menu
@@ -43,33 +45,33 @@ After mood, offer a quick second filter — max 4 options.
 
 **Pie:**
 ```
-  1. 🍫 Chocolate
-  2. 🍎 Fruit-based
-  3. 🥜 Nut or custard
-  4. ✨ Any — surprise me
+- 🍫 Chocolate
+- 🍎 Fruit-based
+- 🥜 Nut or custard
+- ✨ Any — surprise me
 ```
 
 **Cake:**
 ```
-  1. 🍫 Chocolate
-  2. 🍋 Citrus or fruity
-  3. 🍦 Vanilla / classic
-  4. ✨ Any — surprise me
+- 🍫 Chocolate
+- 🍋 Citrus or fruity
+- 🍦 Vanilla / classic
+- ✨ Any — surprise me
 ```
 
 **Cookies:**
 ```
-  1. 🍫 Chocolate chip or brownie
-  2. 🧁 Soft and chewy
-  3. 🫙 Crispy or shortbread
-  4. ✨ Any — surprise me
+- 🍫 Chocolate chip or brownie
+- 🧁 Soft and chewy
+- 🫙 Crispy or shortbread
+- ✨ Any — surprise me
 ```
 
 **All other categories:**
 ```
-  1. ⚡ Quick (under 1 hour)
-  2. 🕐 Takes time (1+ hour)
-  3. ✨ Don't care — surprise me
+- ⚡ Quick (under 1 hour)
+- 🕐 Takes time (1+ hour)
+- ✨ Don't care — surprise me
 ```
 
 ### Step 3 — Query recipes-db
@@ -109,12 +111,11 @@ Filter down to exactly **4 options** — vary time, style, difficulty.
 ```
 Here are 4 great [pies]:
 
-  1. Brown Butter Pecan Pie         75 min  |  4.9★  |  rich & nutty
-  2. Chocolate Silk Pie             45 min  |  4.8★  |  silky, no-bake filling
-  3. Strawberry Rhubarb Pie         90 min  |  4.7★  |  tart and sweet
-  4. Apple Galette                  60 min  |  4.8★  |  rustic, easy
-
-  5. 🔄 Show me different options
+- 🥧 Brown Butter Pecan Pie — 75 min | 4.9★ | rich & nutty
+- 🍫 Chocolate Silk Pie — 45 min | 4.8★ | silky, no-bake filling
+- 🍓 Strawberry Rhubarb Pie — 90 min | 4.7★ | tart and sweet
+- 🍎 Apple Galette — 60 min | 4.8★ | rustic, easy
+- 🔄 Show me different options
 ```
 
 Option 5 always re-rolls the list from the DB.
@@ -124,10 +125,10 @@ Option 5 always re-rolls the list from the DB.
 ```
 How many people are you baking for?
 
-  1. Just us (4–5)
-  2. Family of 7
-  3. Guests (10–12)
-  4. Big batch (15+)
+- 👨‍👩‍👧 Just us (4–5)
+- 👨‍👩‍👧‍👦 Family of 7
+- 🎉 Guests (10–12)
+- 🍰 Big batch (15+)
 ```
 
 ### Step 6 — Fetch full recipe
@@ -152,8 +153,8 @@ Ready to save?
   Brown Butter Pecan Pie — serves 7 — 75 min — est. $XX.XX
   Week budget remaining: $XXX.XX
 
-  1. ✅ Yes, save recipe + shopping list
-  2. 🔄 Pick a different recipe instead
+- ✅ Yes, save it!
+- 🔄 Pick a different recipe
 ```
 
 ### Step 8 — Write recipe file
@@ -180,9 +181,9 @@ Tips, substitutions, make-ahead instructions.
 ```
 Do you need to pick up ingredients, Amanda?
 
-  1. 🏠 I have everything at home
-  2. 🛒 Add to this week's Instacart order
-  3. 🚗 Separate quick run
+- 🏠 I have everything at home
+- 🛒 Add to this week's Instacart order
+- 🚗 Separate quick run
 ```
 
 **Option 1 — Have everything:**
@@ -222,9 +223,9 @@ All saved! ✅
   Brown Butter Pecan Pie — 7 servings — 75 min
   ~/Documents/kitchen/YYYY-WXX/dessert/
 
-  1. 🛒 View shopping list
-  2. 🎂 Find another recipe
-  3. ✅ Done
+- 🛒 View shopping list
+- 🎂 Find another recipe
+- ✅ Done
 ```
 
 ---
