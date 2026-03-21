@@ -215,7 +215,10 @@ ORDER BY i.brand_name, i.name;
 def open_db(path):
     """Open the SQLite database and apply the schema."""
     db = sqlite3.connect(path, isolation_level=None)
-    db.execute("PRAGMA journal_mode=WAL")
+    try:
+        db.execute("PRAGMA journal_mode=WAL")
+    except Exception:
+        pass  # WAL not supported on some filesystems (e.g. cowork sandbox)
     db.executescript(SCHEMA)
     return db
 
