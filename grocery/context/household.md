@@ -20,8 +20,8 @@
   - budget.md — shared weekly budget across all three categories
   - instacart-paste.md — combined master paste for the whole week
 - **Ledger:** ~/Documents/kitchen/ledger.md (permanent running record, never delete)
-- **Schnucks DB:** ${CLAUDE_PLUGIN_ROOT}/data/schnucks.db
-- **Recipes DB:** ${CLAUDE_PLUGIN_ROOT}/data/recipes.db
+- **Schnucks DB:** /Users/jnuts74/Documents/kitchen/schnucks.db (writable copy — plugin cache is read-only)
+- **Recipes DB:** /Users/jnuts74/Documents/kitchen/recipes.db (writable copy)
 - **Harvester:** python3 ${CLAUDE_PLUGIN_ROOT}/scripts/harvester.py (stdlib only, no dependencies)
 
 ## Budget Tracking
@@ -47,5 +47,5 @@
 - 31,814 recipes from AllRecipes, Serious Eats, Simply Recipes, America's Test Kitchen
 
 ## Notes
-- Refresh Schnucks DB before planning: python3 ${CLAUDE_PLUGIN_ROOT}/scripts/harvester.py full
+- Refresh Schnucks DB before planning: SCHNUCKS_DB_PATH=/Users/jnuts74/Documents/kitchen/schnucks.db python3 ${CLAUDE_PLUGIN_ROOT}/scripts/harvester.py full
 - Both DBs are exposed via MCP — query directly, no need to shell out for reads

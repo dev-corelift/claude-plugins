@@ -30,8 +30,8 @@ Read `${CLAUDE_PLUGIN_ROOT}/context/household.md`
 
 ### Step 2 — Check Schnucks DB freshness
 Query `SELECT MAX(updated_at) FROM items` via `schnucks-db` MCP:
-- Today is **Tuesday** → always refresh: run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/harvester.py full`
-- Last update **older than 7 days** → refresh: run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/harvester.py full`
+- Today is **Tuesday** → always refresh: run `SCHNUCKS_DB_PATH=/Users/jnuts74/Documents/kitchen/schnucks.db python3 ${CLAUDE_PLUGIN_ROOT}/scripts/harvester.py full`
+- Last update **older than 7 days** → refresh: run `SCHNUCKS_DB_PATH=/Users/jnuts74/Documents/kitchen/schnucks.db python3 ${CLAUDE_PLUGIN_ROOT}/scripts/harvester.py full`
 - Otherwise → skip. Tell the user: "Schnucks DB last updated X days ago, skipping refresh."
 
 ### Step 3 — Check recent meal history
