@@ -1,6 +1,6 @@
 ---
 description: Plan this week's 5 school day lunches for the girls
-allowed-tools: Read, Write, mcp__recipes-db__*, mcp__schnucks-db__*
+allowed-tools: Read, Write, Bash(python3:*), mcp__recipes-db__*, mcp__schnucks-db__*, mcp__Control_your_Mac__osascript
 ---
 
 # Plan School Lunches

@@ -22,7 +22,7 @@
 - **Ledger:** ~/Documents/kitchen/ledger.md (permanent running record, never delete)
 - **Schnucks DB:** ${CLAUDE_PLUGIN_ROOT}/data/schnucks.db
 - **Recipes DB:** ${CLAUDE_PLUGIN_ROOT}/data/recipes.db
-- **Harvester:** ${CLAUDE_PLUGIN_ROOT}/scripts/harvester (Go binary, no dependencies)
+- **Harvester:** python3 ${CLAUDE_PLUGIN_ROOT}/scripts/harvester.py (stdlib only, no dependencies)
 
 ## Budget Tracking
 - Weekly budget is a **shared pool** across dinner + lunch + baking — $350/week total
@@ -47,5 +47,5 @@
 - 31,814 recipes from AllRecipes, Serious Eats, Simply Recipes, America's Test Kitchen
 
 ## Notes
-- Refresh Schnucks DB before planning: ${CLAUDE_PLUGIN_ROOT}/scripts/harvester full
+- Refresh Schnucks DB before planning: python3 ${CLAUDE_PLUGIN_ROOT}/scripts/harvester.py full
 - Both DBs are exposed via MCP — query directly, no need to shell out for reads

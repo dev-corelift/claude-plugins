@@ -132,22 +132,26 @@ Only include what needs to be bought — flag common fridge staples (deli meat, 
 **Lunch est. total: ~$XX.XX**
 ```
 
-### Step 8 — Update budget.md and append to instacart-paste.md
+### Step 8 — Update budget.md and create Instacart list
 
 Update `~/Documents/kitchen/YYYY-WXX/budget.md` with lunch total.
 
-Append lunch items to `~/Documents/kitchen/YYYY-WXX/instacart-paste.md` (create if dinner hasn't run yet):
-```markdown
-## LUNCH ITEMS
-- item — qty | UPC: XXXX
-- ...
+Create the Instacart link using the `mcp__Control_your_Mac__osascript` tool (runs on host Mac, bypasses sandbox network):
+
+Call `mcp__Control_your_Mac__osascript` with a single `script` parameter:
+```applescript
+do shell script "echo '<JSON_PAYLOAD>' > /tmp/ic-payload.json && python3 '/Users/jnuts74/projects/tools/cowork-plugins/grocery/scripts/instacart-bridge.py' shopping-list /tmp/ic-payload.json 2>&1"
 ```
+- Replace `<JSON_PAYLOAD>` with JSON containing `title`, `expires_in`, and `line_items`
+- Escape single quotes in the JSON as `'\\''`
+- The bridge returns a single Instacart URL — include it in the confirmation message
+- **Grocery quantities, not recipe quantities:** send items as they are purchased (1 package deli turkey, 1 loaf bread, 1 bag grapes — never "4 slices turkey" or "0.5 cup grapes"). Meat/produce sold by weight keep their weight. Packaged goods = qty 1 each.
 
 Check if all three categories (dinner, lunch, baking) are now filled in budget.md — if so, append the week to `~/Documents/kitchen/ledger.md`.
 
 ### Step 9 — Confirm
 
-Tell the user all files are written to `~/Documents/kitchen/YYYY-WXX/lunch/` and the master instacart paste has been updated.
+Tell the user all files are written to `~/Documents/kitchen/YYYY-WXX/lunch/` and share the Instacart link to add items to their cart.
 
 ---
 

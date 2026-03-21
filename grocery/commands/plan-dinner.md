@@ -1,6 +1,6 @@
 ---
 description: Plan this week's 7 dinners, price them, write recipe files
-allowed-tools: Read, Write, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/harvester:*), Bash(osascript:*), mcp__schnucks-db__*, mcp__recipes-db__*
+allowed-tools: Read, Write, Bash(python3:*), Bash(osascript:*), mcp__schnucks-db__*, mcp__recipes-db__*, mcp__Control_your_Mac__osascript
 ---
 
 # Plan Dinners

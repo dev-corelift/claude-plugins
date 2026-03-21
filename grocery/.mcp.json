@@ -5,7 +5,7 @@
       "args": [
         "mcp-server-sqlite",
         "--db-path",
-        "${CLAUDE_PLUGIN_ROOT}/data/schnucks.db"
+        "/Users/jnuts74/projects/tools/cowork-plugins/grocery/data/schnucks.db"
       ]
     },
     "recipes-db": {
@@ -13,7 +13,17 @@
       "args": [
         "mcp-server-sqlite",
         "--db-path",
-        "${CLAUDE_PLUGIN_ROOT}/data/recipes.db"
+        "/Users/jnuts74/projects/tools/cowork-plugins/grocery/data/recipes.db"
+      ]
+    },
+    "instacart": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://mcp.dev.instacart.tools/mcp",
+        "--header",
+        "Authorization:Bearer REDACTED_KEY"
       ]
     }
   }

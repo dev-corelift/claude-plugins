@@ -61,5 +61,15 @@ Tip: Submit Ibotta rebates through the Ibotta app after purchase.
 ```
 
 7. **Offer next steps**
-   - "Want me to add any of these to this week's cart?"
+   - "Want me to create an Instacart list for any of these deals?"
    - "Want the full list of all active deals?"
+
+   If the user selects deals, create the Instacart link using the `mcp__Control_your_Mac__osascript` tool (runs on host Mac, bypasses sandbox network):
+   Call `mcp__Control_your_Mac__osascript` with a single `script` parameter:
+   ```applescript
+   do shell script "echo '<JSON_PAYLOAD>' > /tmp/ic-payload.json && python3 '/Users/jnuts74/projects/tools/cowork-plugins/grocery/scripts/instacart-bridge.py' shopping-list /tmp/ic-payload.json 2>&1"
+   ```
+   - Replace `<JSON_PAYLOAD>` with JSON containing `title`, `expires_in`, and `line_items`
+   - Escape single quotes in the JSON as `'\\''`
+   - The bridge returns a single Instacart URL — share it with the user
+   - **Grocery quantities:** send items as purchased (1 each per product). Deal items are packaged goods — always qty 1 each unless the deal requires buying multiples (e.g. "Buy 2, Save $3" = qty 2).

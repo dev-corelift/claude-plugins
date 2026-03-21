@@ -190,7 +190,15 @@ Do you need to pick up ingredients, Amanda?
 
 **Option 2 — Add to weekly Instacart order:**
 - Write `~/Documents/kitchen/YYYY-WXX/dessert/YYYY-MM-DD-recipe-name-shopping-list.md`
-- Append baking items to `~/Documents/kitchen/YYYY-WXX/instacart-paste.md` under `## BAKING ITEMS`
+- Create the Instacart link using the `mcp__Control_your_Mac__osascript` tool (runs on host Mac, bypasses sandbox network):
+  Call `mcp__Control_your_Mac__osascript` with a single `script` parameter:
+  ```applescript
+  do shell script "echo '<JSON_PAYLOAD>' > /tmp/ic-payload.json && python3 '/Users/jnuts74/projects/tools/cowork-plugins/grocery/scripts/instacart-bridge.py' shopping-list /tmp/ic-payload.json 2>&1"
+  ```
+  - Replace `<JSON_PAYLOAD>` with JSON containing `title`, `expires_in`, and `line_items`
+  - Escape single quotes in the JSON as `'\\''`
+  - The bridge returns a single Instacart URL — share it with Amanda
+  - **Grocery quantities, not recipe quantities:** send items as they are purchased (1 bag flour, 1 dozen eggs, 1 each butter — never "2 cups flour" or "1 egg yolk"). Meat/produce by weight, everything else as 1 each package.
 - Update `~/Documents/kitchen/YYYY-WXX/budget.md` with baking total
 - Check if all three categories filled — if so, append week to `~/Documents/kitchen/ledger.md`
 

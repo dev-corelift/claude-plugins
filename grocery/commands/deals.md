@@ -1,6 +1,6 @@
 ---
 description: Show this week's best Ibotta coupon stacks
-allowed-tools: Read, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/harvester:*), mcp__schnucks-db__*
+allowed-tools: Read, Bash(python3:*), mcp__schnucks-db__*, mcp__Control_your_Mac__osascript
 ---
 
 # Deals

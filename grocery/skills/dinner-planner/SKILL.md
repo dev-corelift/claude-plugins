@@ -30,8 +30,8 @@ Read `${CLAUDE_PLUGIN_ROOT}/context/household.md`
 
 ### Step 2 — Check Schnucks DB freshness
 Query `SELECT MAX(updated_at) FROM items` via `schnucks-db` MCP:
-- Today is **Tuesday** → always refresh: run `${CLAUDE_PLUGIN_ROOT}/scripts/harvester full`
-- Last update **older than 7 days** → refresh: run `${CLAUDE_PLUGIN_ROOT}/scripts/harvester full`
+- Today is **Tuesday** → always refresh: run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/harvester.py full`
+- Last update **older than 7 days** → refresh: run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/harvester.py full`
 - Otherwise → skip. Tell the user: "Schnucks DB last updated X days ago, skipping refresh."
 
 ### Step 3 — Check recent meal history
@@ -233,19 +233,38 @@ Create `~/Documents/kitchen/YYYY-WXX/dinner/` and write:
 Tips, substitutions, make-ahead instructions.
 ```
 
-**`~/Documents/kitchen/YYYY-WXX/instacart-paste.md`** — combined master paste for the whole week. Dinner items go here. Lunch and baking append to the same file when planned. One item per line, exact brand + size + UPC, ready to paste into ChatGPT
-```markdown
-# Instacart Cart — Week XX
+**Instacart shopping list** — after writing the shopping-list.md, create the Instacart link using the `mcp__Control_your_Mac__osascript` tool. This runs on the host Mac outside the sandbox, so it can reach the Instacart API.
 
-## ADD TO CART
-- Schnucks Fresh Natural Boneless Skinless Chicken Thighs — 4 lbs | UPC: 041331010254
-- 80% Lean Ground Beef — 2 lbs | UPC: 041331020000
-- Gala Apples — 6 loose | PLU: 4135 (loose from produce, NOT bagged)
-
----
-## NOT IN DB — SEARCH MANUALLY
-- Fresh cilantro bunch — search: "cilantro bunch"
+Call `mcp__Control_your_Mac__osascript` with a single `script` parameter containing AppleScript:
+```applescript
+do shell script "echo '<JSON_PAYLOAD>' > /tmp/ic-payload.json && python3 '/Users/jnuts74/projects/tools/cowork-plugins/grocery/scripts/instacart-bridge.py' shopping-list /tmp/ic-payload.json 2>&1"
 ```
+- Replace `<JSON_PAYLOAD>` with the actual JSON containing `title`, `expires_in`, and `line_items`
+- Escape single quotes in the JSON as `'\\''`
+- Build the `line_items` array from the approved shopping list (see conversion table below)
+- The bridge returns a single Instacart URL — include it in the confirmation message so the user can click to add everything to their cart
+
+**Converting recipe quantities to grocery quantities for Instacart lineItems:**
+
+Instacart matches product names to real store items. Send names and quantities that match how items are actually sold, not recipe measurements.
+
+| Category | Rule | Example |
+|---|---|---|
+| Meat/seafood (sold by weight) | Send recipe weight | `"sea scallops", qty: 1, unit: "pound"` |
+| Produce (sold by weight) | Send recipe weight | `"white button mushrooms", qty: 0.5, unit: "pound"` |
+| Produce (sold by each) | Send count | `"lemon", qty: 1, unit: "each"` |
+| Butter/dairy/eggs | Send 1 package | `"eggs", qty: 1, unit: "dozen"` — never "egg yolk" |
+| Wine/liquor | Send 1 bottle | `"white wine", qty: 1, unit: "each"` — never "1 cup" |
+| Cream/milk | Send 1 container | `"heavy whipping cream", qty: 1, unit: "each"` |
+| Spices/seasonings | Send 1 jar | `"cayenne pepper", qty: 1, unit: "each"` |
+| Cheese | Include form in name | `"shredded Gruyere cheese", qty: 1, unit: "each"` |
+| Canned goods | Send can count | `"black olives", qty: 1, unit: "each"` |
+| Pasta/rice/dry goods | Send 1 package | `"fusilli pasta", qty: 1, unit: "each"` |
+
+**Key rules:**
+- Never send recipe-only terms as item names (e.g. "egg yolk" — send "eggs")
+- Never send fractional pantry quantities (e.g. "2 tablespoons butter" — send 1 each butter)
+- Include form/cut in the name when it affects the product match (e.g. "shredded", "sliced", "boneless skinless")
 
 ### Step 10b — Update budget.md and ledger.md
 

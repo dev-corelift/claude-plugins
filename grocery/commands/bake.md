@@ -1,6 +1,6 @@
 ---
 description: Interactive dessert and baking recipe discovery for Amanda
-allowed-tools: Read, Write, mcp__recipes-db__*, mcp__schnucks-db__*
+allowed-tools: Read, Write, Bash(python3:*), mcp__recipes-db__*, mcp__schnucks-db__*, mcp__Control_your_Mac__osascript
 ---
 
 # Bake
