@@ -1,6 +1,6 @@
 {
   "name": "grocery",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Weekly meal planning, coupon stacking, and Instacart cart building for a family of 7.",
   "author": {
     "name": "ul0gic"
