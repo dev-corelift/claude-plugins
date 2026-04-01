@@ -1,6 +1,10 @@
 # Claude project files
 .claude/
 
+# Secrets
+.env
+grocery/.env
+
 # Go build artifacts
 grocery/scripts/go.sum
 

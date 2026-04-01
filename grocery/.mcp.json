@@ -23,7 +23,7 @@
         "mcp-remote",
         "https://mcp.dev.instacart.tools/mcp",
         "--header",
-        "Authorization:Bearer REDACTED_KEY"
+        "Authorization:Bearer ${INSTACART_API_KEY}"
       ]
     }
   }
