@@ -601,9 +601,10 @@ def main():
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     env_path = os.path.join(script_dir, ".env")
-    db_path = os.path.join(script_dir, "..", "data", "schnucks.db")
+    default_db = os.path.join(script_dir, "..", "data", "schnucks.db")
 
     load_env(env_path)
+    db_path = os.environ.get("SCHNUCKS_DB_PATH", default_db)
     cfg = load_config(db_path)
 
     cmd = sys.argv[1].lower()

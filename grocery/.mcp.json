@@ -5,7 +5,7 @@
       "args": [
         "mcp-server-sqlite",
         "--db-path",
-        "/Users/jnuts74/projects/tools/cowork-plugins/grocery/data/schnucks.db"
+        "/Users/jnuts74/Documents/kitchen/schnucks.db"
       ]
     },
     "recipes-db": {
@@ -13,7 +13,7 @@
       "args": [
         "mcp-server-sqlite",
         "--db-path",
-        "/Users/jnuts74/projects/tools/cowork-plugins/grocery/data/recipes.db"
+        "/Users/jnuts74/Documents/kitchen/recipes.db"
       ]
     },
     "instacart": {
